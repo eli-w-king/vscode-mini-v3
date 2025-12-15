@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dithered Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .content h1 {
+            font-size: clamp(2rem, 8vw, 6rem);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: -0.02em;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="content">
+        <h1>Your Content Here</h1>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Vertex Shader
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+
+        // Fragment Shader with Bayer Dithering
+        const fragmentShader = `
+            uniform float uTime;
+            uniform vec2 uResolution;
+            uniform vec2 uMouse;
+            uniform vec3 uClickPos[10];
+            uniform float uClickTimes[10];
+            
+            varying vec2 vUv;
+            
+            const float PIXEL_SIZE = 8.0;
+            const int MAX_CLICKS = 10;
+            
+            // Bayer dithering functions
+            float Bayer2(vec2 a) {
+                a = floor(a);
+                return fract(a.x / 2.0 + a.y * a.y * 0.75);
+            }
+            
+            #define Bayer4(a)  (Bayer2(0.5 * (a)) * 0.25 + Bayer2(a))
+            #define Bayer8(a)  (Bayer4(0.5 * (a)) * 0.25 + Bayer2(a))
+            
+            // Improved 3D noise function
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+            vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+            
+            float snoise(vec3 v) { 
+                const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                
+                vec3 i  = floor(v + dot(v, C.yyy));
+                vec3 x0 = v - i + dot(i, C.xxx);
+                
+                vec3 g = step(x0.yzx, x0.xyz);
+                vec3 l = 1.0 - g;
+                vec3 i1 = min(g.xyz, l.zxy);
+                vec3 i2 = max(g.xyz, l.zxy);
+                
+                vec3 x1 = x0 - i1 + C.xxx;
+                vec3 x2 = x0 - i2 + C.yyy;
+                vec3 x3 = x0 - D.yyy;
+                
+                i = mod289(i); 
+                vec4 p = permute(permute(permute(
+                    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+                
+                float n_ = 0.142857142857;
+                vec3 ns = n_ * D.wyz - D.xzx;
+                
+                vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+                
+                vec4 x_ = floor(j * ns.z);
+                vec4 y_ = floor(j - 7.0 * x_);
+                
+                vec4 x = x_ *ns.x + ns.yyyy;
+                vec4 y = y_ *ns.x + ns.yyyy;
+                vec4 h = 1.0 - abs(x) - abs(y);
+                
+                vec4 b0 = vec4(x.xy, y.xy);
+                vec4 b1 = vec4(x.zw, y.zw);
+                
+                vec4 s0 = floor(b0)*2.0 + 1.0;
+                vec4 s1 = floor(b1)*2.0 + 1.0;
+                vec4 sh = -step(h, vec4(0.0));
+                
+                vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+                vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                
+                vec3 p0 = vec3(a0.xy, h.x);
+                vec3 p1 = vec3(a0.zw, h.y);
+                vec3 p2 = vec3(a1.xy, h.z);
+                vec3 p3 = vec3(a1.zw, h.w);
+                
+                vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+                p0 *= norm.x;
+                p1 *= norm.y;
+                p2 *= norm.z;
+                p3 *= norm.w;
+                
+                vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+                m = m * m;
+                return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+            }
+            
+            // FBM (Fractional Brownian Motion)
+            float fbm(vec3 p) {
+                float value = 0.0;
+                float amplitude = 0.5;
+                float frequency = 1.0;
+                
+                for(int i = 0; i < 5; i++) {
+                    value += amplitude * snoise(p * frequency);
+                    frequency *= 2.0;
+                    amplitude *= 0.5;
+                }
+                return value;
+            }
+            
+            void main() {
+                vec2 uv = vUv;
+                vec2 fragCoord = vUv * uResolution;
+                float aspectRatio = uResolution.x / uResolution.y;
+                
+                // Create flowing noise
+                vec3 noiseCoord = vec3(
+                    uv.x * aspectRatio * 2.0,
+                    uv.y * 2.0,
+                    uTime * 0.08
+                );
+                
+                float noise = fbm(noiseCoord) * 0.5 + 0.5;
+                
+                // Add subtle drift
+                float drift = sin(uv.x * 3.14159 + uTime * 0.15) * 0.5 + 0.5;
+                drift *= cos(uv.y * 3.14159 * 0.7 + uTime * 0.12) * 0.5 + 0.5;
+                
+                // Combine noise and drift
+                float pattern = mix(noise, drift, 0.3);
+                
+                // Apply Bayer dithering
+                vec2 pixelId = floor(fragCoord / PIXEL_SIZE);
+                float dither = Bayer8(pixelId);
+                
+                // Add dithering to pattern
+                pattern += (dither - 0.5) * 0.3;
+                
+                // Interactive ripples
+                float ripple = 0.0;
+                for(int i = 0; i < MAX_CLICKS; i++) {
+                    vec3 click = uClickPos[i];
+                    if(click.x < 0.0) continue;
+                    
+                    vec2 clickUV = click.xy;
+                    float t = max(uTime - uClickTimes[i], 0.0);
+                    float r = distance(uv * vec2(aspectRatio, 1.0), clickUV * vec2(aspectRatio, 1.0));
+                    
+                    float waveR = 0.6 * t;
+                    float ring = exp(-pow((r - waveR) / 0.08, 2.0));
+                    float atten = exp(-2.0 * t) * exp(-1.5 * r);
+                    
+                    ripple = max(ripple, ring * atten);
+                }
+                
+                pattern = clamp(pattern + ripple * 0.6, 0.0, 1.0);
+                
+                // Threshold
+                float mask = step(0.5, pattern);
+                
+                // Color palette - deep blues with subtle variation
+                vec3 color1 = vec3(0.05, 0.08, 0.12);  // Dark base
+                vec3 color2 = vec3(0.12, 0.18, 0.28);  // Mid blue
+                vec3 accent = vec3(0.20, 0.35, 0.55);  // Lighter accent
+                
+                // Add subtle color variation based on position
+                float colorNoise = fbm(vec3(uv * 3.0, uTime * 0.05)) * 0.5 + 0.5;
+                vec3 baseColor = mix(color1, color2, colorNoise);
+                
+                vec3 finalColor = mix(baseColor, accent, mask * 0.85);
+                
+                // Subtle vignette
+                float vignette = 1.0 - length(uv - 0.5) * 0.6;
+                finalColor *= vignette;
+                
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('canvas'),
+            antialias: false 
+        });
+        
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Shader uniforms
+        const clickPositions = new Array(10).fill(0).map(() => new THREE.Vector3(-1, -1, 0));
+        const clickTimes = new Array(10).fill(0);
+        let clickIndex = 0;
+        
+        const uniforms = {
+            uTime: { value: 0 },
+            uResolution: { value: new THREE.Vector2() },
+            uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+            uClickPos: { value: clickPositions },
+            uClickTimes: { value: clickTimes }
+        };
+        
+        // Create plane with shader material
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        
+        // Handle resize
+        function resize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            renderer.setSize(width, height);
+            uniforms.uResolution.value.set(width, height);
+        }
+        
+        resize();
+        window.addEventListener('resize', resize);
+        
+        // Mouse interaction
+        let mouseX = 0.5;
+        let mouseY = 0.5;
+        
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX / window.innerWidth;
+            mouseY = 1.0 - (e.clientY / window.innerHeight);
+            uniforms.uMouse.value.set(mouseX, mouseY);
+        });
+        
+        // Click interaction
+        window.addEventListener('click', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = 1.0 - (e.clientY / window.innerHeight);
+            
+            clickPositions[clickIndex].set(x, y, 0);
+            clickTimes[clickIndex] = uniforms.uTime.value;
+            
+            clickIndex = (clickIndex + 1) % 10;
+        });
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            uniforms.uTime.value += 0.016;
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
