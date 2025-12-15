@@ -234,6 +234,44 @@
       flex-direction: column;
       gap: 12px;
     }
+    .chat-empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 40px 0;
+      gap: 8px;
+      min-height: 100%;
+    }
+    .aux-empty-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .chat-empty-state.visible {
+      display: flex;
+    }
+    .aux-empty-icon {
+      width: 96px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .aux-empty-icon i {
+      font-size: 28px;
+      color: var(--muted);
+      transform: scale(4);
+      transform-origin: center;
+    }
+    .aux-empty-copy {
+      max-width: 180px;
+      font-size: 13px;
+    }
     .chat-empty { margin: auto; text-align: center; color: var(--muted); }
     .chat-empty .codicon { font-size: 28px; display:block; margin: 0 auto 10px; }
     .chat-bubble { max-width: 75%; padding: 10px 12px; border-radius: 10px; }
@@ -1146,8 +1184,14 @@
         </div>
         <div class="aux-body" id="chatLog">
           <div class="chat-empty-state" id="auxEmpty">
-            <i class="codicon codicon-chat-sparkle"></i>
-            <div>Ask anything to get started</div>
+            <div class="aux-empty-content">
+              <div class="aux-empty-icon">
+                <i class="codicon codicon-chat-sparkle"></i>
+              </div>
+              <div class="aux-empty-copy">
+                Ask anything to get started
+              </div>
+            </div>
           </div>
         </div>
         <div class="aux-input">
@@ -1288,6 +1332,7 @@
     const aux = document.getElementById('aux');
     const auxResizer = document.getElementById('auxResizer');
     const chatLog = document.getElementById('chatLog');
+    const auxEmptyState = document.getElementById('auxEmpty');
     const chatInput = document.getElementById('chatInput');
     const themeFile = document.getElementById('themeFile');
 
@@ -1981,12 +2026,18 @@ body {
     } catch {}
 
     // Minimal chat echo
+    function syncAuxEmptyState() {
+      if (!auxEmptyState || !chatLog) return;
+      const hasMessages = chatLog.querySelectorAll('.msg').length > 0;
+      auxEmptyState.classList.toggle('visible', !hasMessages);
+    }
     function chatPost(role, text) {
       const div=document.createElement('div');
       div.className=`msg ${role}`;
       div.textContent=text;
       chatLog.appendChild(div);
       chatLog.scrollTop=chatLog.scrollHeight;
+      syncAuxEmptyState();
     }
     document.getElementById('chatSend').onclick=()=>{
       const q=chatInput.value.trim(); if(!q) return;
@@ -1995,6 +2046,7 @@ body {
       setTimeout(()=>chatPost('bot', 'Echo: '+q), 200);
     };
     chatInput?.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('chatSend').click(); }});
+    syncAuxEmptyState();
 
     // Workbench theme mapper
     function applyWorkbenchTheme(c) {
