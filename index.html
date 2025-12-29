@@ -139,6 +139,8 @@
 
     .titlebar {
       background: var(--titlebar-bg);
+      height: var(--titlebar-h);
+      line-height: 22px;
       border-bottom: 1px solid var(--border);
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -156,7 +158,7 @@
     .dot.yellow { background: #febc2e; }
     .dot.green { background: #28c840; }
     .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--titlebar-fg, var(--muted)); }
-    .title-actions { display: flex; gap: 6px; align-items: center; }
+    .title-actions { display: flex; gap: 4px; align-items: center; }
     .titlebar .btn { color: var(--titlebar-fg, var(--fg)); }
 
     /* Command Center (project quick palette) */
@@ -164,7 +166,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 4px 10px;
+      height: 22px;
+      padding: 0 10px;
       border-radius: 6px;
       border: 1px solid var(--border, #2a2a2a);
       background: var(--command-bg, rgba(255,255,255,0.02));
@@ -346,14 +349,21 @@
     .dropdown-wrap select::-ms-expand { display: none; }
     .chat-composer input {
       flex: 1;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      color: var(--fg);
-      border-radius: 8px;
+      background: var(--input-bg, rgba(255,255,255,.04));
+      border: 1px solid var(--input-border, rgba(255,255,255,.08));
+      color: var(--input-fg, var(--fg));
+      border-radius: 4px;
       padding: 8px 12px;
       outline: none;
       font-family: var(--font-ui);
       font-size: 13px;
+    }
+    .chat-composer input:focus {
+      border-color: var(--focus-border, var(--accent));
+      outline: 1px solid var(--focus-border, var(--accent));
+    }
+    .chat-composer input::placeholder {
+      color: var(--input-placeholder-fg, var(--muted));
     }
 
     /* Updates modal */
@@ -470,19 +480,36 @@
       border: 1px solid var(--border);
       color: var(--fg);
       padding: 4px 8px;
-      border-radius: 6px;
+      border-radius: 2px;
       cursor: pointer;
       font-size: var(--fs-ui);
       display: flex;
       align-items: center;
       gap: 4px;
+      transition: background 0.1s, border-color 0.1s;
     }
-    .btn:hover { border-color: #3a3a3a; }
-    .btn.primary { border-color: var(--accent); color: #cfeaff; }
+    .btn:hover { background: rgba(255,255,255,.05); border-color: var(--border); }
+    .btn:focus-visible { outline: 1px solid var(--focus-border, var(--accent)); outline-offset: 1px; }
+    .btn.primary { 
+      background: var(--button-bg, var(--accent)); 
+      border-color: var(--button-border, var(--accent)); 
+      color: var(--button-fg, #fff); 
+    }
+    .btn.primary:hover { 
+      background: var(--button-hover-bg, color-mix(in oklab, var(--accent) 90%, black)); 
+    }
+    .btn.secondary {
+      background: var(--button-secondary-bg, rgba(255,255,255,.08));
+      border-color: var(--border);
+      color: var(--button-secondary-fg, var(--fg));
+    }
+    .btn.secondary:hover {
+      background: var(--button-secondary-hover-bg, rgba(255,255,255,.12));
+    }
     .btn.icon { width: 28px; height: 26px; justify-content: center; padding: 0; }
     .btn.hidden { display: none; }
-    .btn.plain { border: 0; }
-    .btn.plain:hover { border: 0; }
+    .btn.plain { border: 0; background: transparent; }
+    .btn.plain:hover { border: 0; background: rgba(255,255,255,.05); }
     .btn.plain:focus, .btn.plain:focus-visible { outline: none; box-shadow: none; }
 
     .updates-btn { position: relative; }
@@ -529,12 +556,13 @@
 
     .activitybar {
       background: var(--activity-bg);
+      width: var(--activity-w);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px 0;
-      gap: 8px;
+      padding: 0;
+      gap: 0;
       user-select: none;
     }
     .activitybar-top-host { display: none; }
@@ -574,8 +602,9 @@
       background: var(--accent);
     }
     .act {
-      width: 34px; height: 34px;
-      border-radius: 8px;
+      width: 48px;
+      height: 48px;
+      border-radius: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -596,7 +625,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 3px;
+      width: 2px;
       background: var(--accent);
     }
     .act:hover { background: rgba(255,255,255,.05); color: var(--activity-active-fg, #fff); }
@@ -612,22 +641,23 @@
       overflow: visible;
     }
     .sidebar-header {
-      padding: 10px 10px 8px;
+      padding: 0 8px;
+      height: 35px;
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       user-select: none;
     }
-    .sidebar-title { letter-spacing: .06em; color: var(--muted); font-weight: 600; font-size: 11px; }
-    .sidebar-body { padding: 8px; overflow-x: visible; overflow-y: auto; min-height: 0; }
+    .sidebar-title { color: var(--muted); font-weight: normal; font-size: 11px; line-height: 35px; text-transform: uppercase; }
+    .sidebar-body { padding: 0; overflow-x: visible; overflow-y: auto; min-height: 0; }
 
-    .tree { font-family: var(--font-ui); font-size: var(--fs-ui); line-height: 1.8; }
+    .tree { font-family: var(--font-ui); font-size: var(--fs-ui); line-height: 1.8; padding: 8px; }
     .tree .item {
       display: flex; gap: 8px; align-items: center;
-      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      padding: 2px 8px; border-radius: 0; cursor: pointer;
       color: var(--sidebar-fg, var(--fg));
       overflow: visible;
     }
-    .tree .item:hover { background: var(--list-hover-bg, rgba(255,255,255,.05)); }
+    .tree .item:hover { background: var(--list-hover-bg, rgba(255,255,255,.05)); color: var(--list-hover-fg, inherit); }
     .tree .item.active { 
       background: var(--list-activeSelection-bg, rgba(0,122,204,.18)); 
       outline: 1px solid var(--list-activeSelection-border, rgba(0,122,204,.25)); 
@@ -677,12 +707,11 @@
     .hide-panel .panel-resizer { display: none !important; }
 
     .tabs {
-      display: flex; gap: 1px;
-      background: var(--border);
-      border-bottom: 1px solid var(--border);
-      user-select: none;
+      display: flex; gap: 0;
+      background: var(--tab-bg);
+      border-bottom: 1px solid var(--border);\n      user-select: none;
       overflow-x: auto;
-      min-height: 34px;
+      min-height: 35px;
       align-items: stretch;
     }
     .tab {
@@ -694,11 +723,11 @@
       max-width: 260px;
       flex-shrink: 0;
       overflow: visible;
-      height: 34px;
+      height: 35px;
       color: var(--tab-inactive-fg, var(--fg));
     }
     .tab:hover { background: rgba(255,255,255,.05); }
-    .tab.active { background: var(--tab-active-bg); border-bottom: 2px solid var(--accent); color: var(--tab-fg, #fff); }
+    .tab.active { background: var(--tab-active-bg); border-top: 2px solid var(--accent); color: var(--tab-fg, #fff); }
     .tab .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tab .icon { flex-shrink: 0; margin: 0 2px; }
     .tab .close { margin-left:auto; opacity:.7; }
@@ -719,7 +748,7 @@
       min-height: 200px; /* Ensure minimum visible height */
     }
     .gutter {
-      background: #191919;
+      background: var(--editor-bg);
       border-right: 1px solid var(--border);
       padding: 10px 0;
       font-family: var(--font-mono);
@@ -853,27 +882,32 @@
     .panel-tabs {
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 8px;
+      height: 35px;
       border-bottom: 1px solid var(--border);
       user-select: none;
     }
     .panel-left { display:flex; gap: 6px; align-items:center; }
     /* VS Code-like panel tabs with underline for active */
     .pill {
-      padding: 8px 10px;
+      padding: 0 10px;
+      height: 35px;
       border-radius: 0;
       background: transparent;
       border: 0;
       border-bottom: 2px solid transparent;
       cursor: pointer;
       display: flex; align-items: center; gap: 6px;
-      color: var(--muted);
+      color: var(--panel-title-inactive-fg, var(--muted));
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: .06em;
-      font-weight: 600;
+      letter-spacing: normal;
+      font-weight: normal;
     }
-    .pill:hover { color: #fff; background: rgba(255,255,255,.03); }
-    .pill.active { border-bottom-color: var(--accent); color: #fff; }
+    .pill:hover { color: var(--panel-title-active-fg, #fff); background: rgba(255,255,255,.03); }
+    .pill.active { 
+      border-bottom-color: var(--panel-title-active-border, var(--accent)); 
+      color: var(--panel-title-active-fg, #fff); 
+    }
 
     .terminal {
       font-family: var(--font-mono);
@@ -960,15 +994,18 @@
 
     .statusbar {
       background: var(--status-bg);
+      height: var(--statusbar-h);
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
-      padding: 0 10px;
+      padding: 0;
       color: var(--status-fg, white);
       user-select: none;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
     }
-    .status-left, .status-right { display:flex; gap: 10px; align-items:center; }
-    .status-item { display: flex; align-items: center; gap: 4px; }
+    .status-left, .status-right { display:flex; gap: 0; align-items:center; }
+    .status-item { display: flex; align-items: center; gap: 4px; margin: 0 3px; padding: 0 5px; }
 
     /* Editor empty state */
     .editor-empty {
@@ -1066,7 +1103,24 @@
     .aux-title { letter-spacing: .06em; color: var(--muted); font-weight: 600; font-size: 11px; }
     .aux-body { padding: 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
     .aux-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--border); }
-    .aux-input input { flex: 1; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: var(--fg); border-radius: 8px; padding: 8px 10px; outline: none; font-family: var(--font-ui); font-size: 12px; }
+    .aux-input input { 
+      flex: 1; 
+      background: var(--input-bg, rgba(255,255,255,.04)); 
+      border: 1px solid var(--input-border, rgba(255,255,255,.08)); 
+      color: var(--input-fg, var(--fg)); 
+      border-radius: 4px; 
+      padding: 8px 10px; 
+      outline: none; 
+      font-family: var(--font-ui); 
+      font-size: 12px; 
+    }
+    .aux-input input:focus {
+      border-color: var(--focus-border, var(--accent));
+      outline: 1px solid var(--focus-border, var(--accent));
+    }
+    .aux-input input::placeholder {
+      color: var(--input-placeholder-fg, var(--muted));
+    }
     .msg { display: inline-flex; max-width: 90%; padding: 8px 10px; border-radius: 8px; }
     .msg.user { align-self: flex-end; background: rgba(0,122,204,.18); border: 1px solid rgba(0,122,204,.25); }
     .msg.bot { align-self: flex-start; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); }
@@ -1097,11 +1151,17 @@
       border: 0;
       outline: none;
       padding: 12px;
-      background: #1f1f1f;
-      color: #fff;
+      background: var(--input-bg, #1f1f1f);
+      color: var(--input-fg, #fff);
       font-family: var(--font-ui);
       font-size: 14px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--input-border, rgba(255,255,255,.08));
+    }
+    .palette input:focus {
+      border-bottom-color: var(--focus-border, var(--accent));
+    }
+    .palette input::placeholder {
+      color: var(--input-placeholder-fg, var(--muted));
     }
     .palette-list { max-height: 320px; overflow: auto; }
     .pal-item {
@@ -2543,39 +2603,174 @@ body {
       } catch {}
 
       const map = [
+        // Title bar
         ['--titlebar-bg', c['titleBar.activeBackground']],
         ['--titlebar-fg', c['titleBar.activeForeground']],
+        ['--titlebar-inactive-fg', c['titleBar.inactiveForeground']],
+        ['--titlebar-border', c['titleBar.border']],
+        
+        // Activity bar
         ['--activity-bg', c['activityBar.background']],
         ['--activity-fg', c['activityBar.foreground']],
         ['--activity-active-fg', c['activityBar.foreground']],
+        ['--activity-inactive-fg', c['activityBar.inactiveForeground']],
+        ['--activity-border', c['activityBar.border']],
+        ['--activity-active-border', c['activityBar.activeBorder']],
+        ['--activity-drop-border', c['activityBar.dropBorder']],
+        
+        // Sidebar
         ['--sidebar-bg', c['sideBar.background']],
         ['--sidebar-fg', c['sideBar.foreground']],
+        ['--sidebar-border', c['sideBar.border']],
+        ['--sidebar-title-fg', c['sideBarTitle.foreground']],
+        ['--sidebar-section-header-bg', c['sideBarSectionHeader.background']],
+        ['--sidebar-section-header-fg', c['sideBarSectionHeader.foreground']],
+        ['--sidebar-section-header-border', c['sideBarSectionHeader.border']],
+        
+        // Editor
         ['--editor-bg', c['editor.background']],
         ['--editor-fg', c['editor.foreground']],
         ['--editor-selection-bg', c['editor.selectionBackground']],
         ['--editor-lineHighlight-bg', c['editor.lineHighlightBackground']],
         ['--editor-cursor-fg', c['editorCursor.foreground']],
         ['--editorLineNumber-fg', c['editorLineNumber.foreground']],
-        ['--panel-bg', c['panel.background']],
-        ['--panel-fg', c['panel.foreground']],
-        ['--status-bg', c['statusBar.background']],
-        ['--status-fg', c['statusBar.foreground']],
-        ['--command-bg', c['commandCenter.background'] || c['titleBar.inactiveBackground']],
-        ['--menu-bg', c['menu.background'] || c['editor.background']],
-        ['--chatwin-bg', c['editor.background']],
-        ['--chatwin-fg', c['foreground']],
+        ['--editorLineNumber-active-fg', c['editorLineNumber.activeForeground']],
+        
+        // Editor widgets
+        ['--editor-widget-bg', c['editorWidget.background']],
+        ['--editor-widget-border', c['editorWidget.border']],
+        ['--editor-widget-fg', c['editorWidget.foreground']],
+        ['--editor-suggest-bg', c['editorSuggestWidget.background']],
+        ['--editor-suggest-border', c['editorSuggestWidget.border']],
+        ['--editor-suggest-fg', c['editorSuggestWidget.foreground']],
+        ['--editor-suggest-selected-bg', c['editorSuggestWidget.selectedBackground']],
+        ['--editor-suggest-highlight-fg', c['editorSuggestWidget.highlightForeground']],
+        ['--editor-hover-bg', c['editorHoverWidget.background']],
+        ['--editor-hover-border', c['editorHoverWidget.border']],
+        
+        // Tabs
         ['--tab-active-bg', c['tab.activeBackground']],
         ['--tab-bg', c['tab.inactiveBackground']],
         ['--tab-fg', c['tab.activeForeground']],
         ['--tab-inactive-fg', c['tab.inactiveForeground']],
+        ['--tab-border', c['tab.border']],
+        ['--tab-active-border', c['tab.activeBorder']],
+        ['--tab-active-border-top', c['tab.activeBorderTop']],
+        ['--tab-unfocused-active-border', c['tab.unfocusedActiveBorder']],
+        ['--tab-hover-bg', c['tab.hoverBackground']],
+        ['--tab-hover-border', c['tab.hoverBorder']],
+        ['--tab-active-modified-border', c['tab.activeModifiedBorder']],
+        ['--tab-inactive-modified-border', c['tab.inactiveModifiedBorder']],
+        
+        // Panel
+        ['--panel-bg', c['panel.background']],
+        ['--panel-fg', c['panel.foreground']],
+        ['--panel-border', c['panel.border']],
+        ['--panel-title-active-fg', c['panelTitle.activeForeground']],
+        ['--panel-title-inactive-fg', c['panelTitle.inactiveForeground']],
+        ['--panel-title-active-border', c['panelTitle.activeBorder']],
+        ['--panel-input-border', c['panelInput.border']],
+        
+        // Status bar
+        ['--status-bg', c['statusBar.background']],
+        ['--status-fg', c['statusBar.foreground']],
+        ['--status-border', c['statusBar.border']],
+        ['--status-debugging-bg', c['statusBar.debuggingBackground']],
+        ['--status-debugging-fg', c['statusBar.debuggingForeground']],
+        ['--status-no-folder-bg', c['statusBar.noFolderBackground']],
+        ['--status-no-folder-fg', c['statusBar.noFolderForeground']],
+        
+        // Input controls
+        ['--input-bg', c['input.background']],
+        ['--input-fg', c['input.foreground']],
+        ['--input-border', c['input.border']],
+        ['--input-placeholder-fg', c['input.placeholderForeground']],
+        ['--input-active-border', c['inputOption.activeBorder']],
+        
+        // Button
+        ['--button-bg', c['button.background']],
+        ['--button-fg', c['button.foreground']],
+        ['--button-hover-bg', c['button.hoverBackground']],
+        ['--button-border', c['button.border']],
+        ['--button-secondary-bg', c['button.secondaryBackground']],
+        ['--button-secondary-fg', c['button.secondaryForeground']],
+        ['--button-secondary-hover-bg', c['button.secondaryHoverBackground']],
+        
+        // List / Tree
+        ['--list-hover-bg', c['list.hoverBackground']],
+        ['--list-hover-fg', c['list.hoverForeground']],
+        ['--list-activeSelection-bg', c['list.activeSelectionBackground']],
+        ['--list-activeSelection-fg', c['list.activeSelectionForeground']],
+        ['--list-inactiveSelection-bg', c['list.inactiveSelectionBackground']],
+        ['--list-inactiveSelection-fg', c['list.inactiveSelectionForeground']],
+        ['--list-focus-bg', c['list.focusBackground']],
+        ['--list-focus-fg', c['list.focusForeground']],
+        ['--list-focus-outline', c['list.focusOutline']],
+        ['--list-drop-bg', c['list.dropBackground']],
+        ['--list-highlight-fg', c['list.highlightForeground']],
+        ['--list-error-fg', c['list.errorForeground']],
+        ['--list-warning-fg', c['list.warningForeground']],
+        ['--list-activeSelection-border', c['list.activeSelectionForeground'] ? `color-mix(in oklab, ${c['list.activeSelectionForeground']} 30%, transparent)` : undefined],
+        
+        // Dropdown
+        ['--dropdown-bg', c['dropdown.background']],
+        ['--dropdown-fg', c['dropdown.foreground']],
+        ['--dropdown-border', c['dropdown.border']],
+        
+        // Scrollbar
+        ['--scrollbar-slider-bg', c['scrollbarSlider.background']],
+        ['--scrollbar-slider-hover-bg', c['scrollbarSlider.hoverBackground']],
+        ['--scrollbar-slider-active-bg', c['scrollbarSlider.activeBackground']],
+        
+        // Badge
+        ['--badge-bg', c['badge.background']],
+        ['--badge-fg', c['badge.foreground']],
+        
+        // Progress bar
+        ['--progress-bg', c['progressBar.background']],
+        
+        // Terminal ANSI colors
+        ['--term-ansi-black', c['terminal.ansiBlack']],
+        ['--term-ansi-red', c['terminal.ansiRed']],
+        ['--term-ansi-green', c['terminal.ansiGreen']],
+        ['--term-ansi-yellow', c['terminal.ansiYellow']],
+        ['--term-ansi-blue', c['terminal.ansiBlue']],
+        ['--term-ansi-magenta', c['terminal.ansiMagenta']],
+        ['--term-ansi-cyan', c['terminal.ansiCyan']],
+        ['--term-ansi-white', c['terminal.ansiWhite']],
+        ['--term-ansi-bright-black', c['terminal.ansiBrightBlack']],
+        ['--term-ansi-bright-red', c['terminal.ansiBrightRed']],
+        ['--term-ansi-bright-green', c['terminal.ansiBrightGreen']],
+        ['--term-ansi-bright-yellow', c['terminal.ansiBrightYellow']],
+        ['--term-ansi-bright-blue', c['terminal.ansiBrightBlue']],
+        ['--term-ansi-bright-magenta', c['terminal.ansiBrightMagenta']],
+        ['--term-ansi-bright-cyan', c['terminal.ansiBrightCyan']],
+        ['--term-ansi-bright-white', c['terminal.ansiBrightWhite']],
+        ['--term-selection-bg', c['terminal.selectionBackground']],
+        ['--term-cursor-fg', c['terminalCursor.foreground']],
+        
+        // Git decorations
+        ['--git-added', c['gitDecoration.addedResourceForeground']],
+        ['--git-modified', c['gitDecoration.modifiedResourceForeground']],
+        ['--git-deleted', c['gitDecoration.deletedResourceForeground']],
+        ['--git-untracked', c['gitDecoration.untrackedResourceForeground']],
+        ['--git-ignored', c['gitDecoration.ignoredResourceForeground']],
+        ['--git-conflicting', c['gitDecoration.conflictingResourceForeground']],
+        
+        // Other UI
+        ['--command-bg', c['commandCenter.background'] || c['titleBar.inactiveBackground']],
+        ['--menu-bg', c['menu.background'] || c['editor.background']],
+        ['--menu-fg', c['menu.foreground']],
+        ['--menu-selection-bg', c['menu.selectionBackground']],
+        ['--menu-selection-fg', c['menu.selectionForeground']],
+        ['--menu-border', c['menu.border']],
+        ['--chatwin-bg', c['editor.background']],
+        ['--chatwin-fg', c['foreground']],
         ['--accent', accent],
         ['--border', c['panel.border'] || c['contrastBorder']],
         ['--fg', c['foreground']],
         ['--muted', c['descriptionForeground']],
-        ['--list-hover-bg', c['list.hoverBackground']],
-        ['--list-activeSelection-bg', c['list.activeSelectionBackground']],
-        ['--list-activeSelection-fg', c['list.activeSelectionForeground']],
-        ['--list-activeSelection-border', c['list.activeSelectionForeground'] ? `color-mix(in oklab, ${c['list.activeSelectionForeground']} 30%, transparent)` : undefined]
+        ['--focus-border', c['focusBorder']],
       ];
       const root = document.documentElement;
       for (const [k,v] of map) if (v) root.style.setProperty(k, v);
