@@ -278,6 +278,7 @@
       padding: 40px 0;
       gap: 8px;
       min-height: 100%;
+      background: var(--panel-bg, #1b1b1b);
     }
     .aux-empty-content {
       display: flex;
@@ -1290,6 +1291,7 @@
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       user-select: none;
+      background: var(--panel-bg, #1b1b1b);
     }
     /* Aux header: treat CHAT title like an always-active single tab */
     .aux-title {
@@ -1305,9 +1307,9 @@
       margin-bottom: -8px;
       border-bottom: 2px solid var(--accent);
     }
-    .aux-body { padding: 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+    .aux-body { padding: 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; background: var(--panel-bg, #1b1b1b); }
     /* Composer host (was a flex row for the legacy one-line input) */
-    .aux-input { display: block; padding: 8px; border-top: 1px solid var(--border); background: var(--panel-bg, #1b1b1b); }
+    .aux-input { display: block; padding: 8px; background: var(--panel-bg, #1b1b1b); }
     .aux-input .composer { width: 100%; }
     .aux-input input { flex: 1; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: var(--fg); border-radius: 8px; padding: 8px 10px; outline: none; font-family: var(--font-ui); font-size: 12px; }
     .msg { display: inline-flex; max-width: 90%; padding: 8px 10px; border-radius: 8px; }
