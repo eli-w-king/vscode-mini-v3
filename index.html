@@ -189,45 +189,82 @@
       z-index: 70;
     }
 
-    /* Command Center (project quick palette) */
-    .project-quick {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border, #2a2a2a);
-      background: var(--command-bg, rgba(255,255,255,0.02));
-      color: var(--titlebar-fg, var(--fg));
-      cursor: pointer;
+    /* Command Center (project quick palette) - exact VS Code styling */
+    .command-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: stretch;
+      height: 22px;
+      width: 38vw;
+      max-width: 600px;
       min-width: 200px;
-      max-width: 40vw;
+      border-radius: 4px;
+      border: 1px solid var(--commandCenter-border, rgba(204, 204, 204, 0.2));
+      background: var(--commandCenter-background, rgba(255, 255, 255, 0.05));
+      color: var(--commandCenter-foreground, var(--titlebar-fg));
+      cursor: pointer;
       overflow: hidden;
-      white-space: nowrap;
+      font-size: 13px;
     }
-    .project-quick:hover { background: rgba(255,255,255,.06); }
-    .project-quick .label {
-      overflow: hidden; text-overflow: ellipsis;
+    .command-center:hover {
+      background: var(--commandCenter-activeBackground, rgba(255, 255, 255, 0.08));
+      border-color: var(--commandCenter-activeBorder, rgba(204, 204, 204, 0.3));
+    }
+    .command-center-quick-pick {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      padding: 0 8px;
+      gap: 6px;
+      min-width: 0;
+    }
+    .command-center-quick-pick .search-icon {
+      font-size: 14px;
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+    .command-center-quick-pick .search-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .command-center-chat {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      border-left: 1px solid var(--commandCenter-border, rgba(204, 204, 204, 0.2));
+      gap: 4px;
+    }
+    .command-center-chat:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .command-center-chat .codicon {
+      font-size: 14px;
     }
 
     /* Chat menu popover */
-    .menu-wrap { position: relative; }
-    .menu {
+    .title-center .menu {
       position: absolute;
-      top: 28px;
-      right: 0;
+      top: calc(50% + 16px);
+      left: 50%;
+      transform: translateX(-50%);
       background: var(--menu-bg, #1f1f1f);
       border: 1px solid var(--border, #2a2a2a);
-      border-radius: 8px;
+      border-radius: 6px;
       min-width: 220px;
-      box-shadow: 0 12px 32px rgba(0,0,0,.4);
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
       display: none;
       z-index: 60;
       overflow: hidden;
+      padding: 4px 0;
     }
-    .menu.show { display: block; }
-    .menu .item { padding: 8px 12px; cursor: pointer; display:flex; align-items:center; gap:8px; }
-    .menu .item:hover { background: rgba(255,255,255,.06); }
+    .title-center .menu.show { display: block; }
+    .menu .item { padding: 6px 10px; cursor: pointer; display:flex; align-items:center; gap:8px; font-size: 13px; border-radius: 3px; margin: 0 4px; }
+    .menu .item:hover { background: var(--list-hover-bg, rgba(255,255,255,.06)); }
 
     /* Standalone Chat Window (modal) */
     .chat-overlay {
@@ -291,17 +328,17 @@
       display: flex;
     }
     .aux-empty-icon {
-      width: 96px;
-      height: 96px;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 12px;
     }
     .aux-empty-icon i {
-      font-size: 28px;
+      font-size: 32px;
       color: var(--muted);
-      transform: scale(4);
-      transform-origin: center;
+      opacity: 0.5;
     }
     .aux-empty-copy {
       max-width: 180px;
@@ -317,122 +354,183 @@
       border-top: 1px solid var(--border, #2a2a2a);
       background: var(--panel-bg, #1b1b1b);
     }
-    /* Cursor-like chat composer (shared by aux + standalone) */
-    .composer {
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 8px;
-      padding: 10px 10px;
-      display: grid;
-      grid-template-rows: auto auto auto;
-      gap: 10px;
+    /* Chat input composer - exact VS Code styling */
+    .chat-input-container {
+      box-sizing: border-box;
+      cursor: text;
+      background-color: var(--input-background, #3c3c3c);
+      border: 1px solid var(--input-border, transparent);
+      border-radius: 4px;
+      padding: 0 6px 6px 6px;
+      width: 100%;
     }
-    .composer-top {
+    .chat-input-container.focused {
+      border-color: var(--focusBorder, #007acc);
+    }
+    
+    /* Attached context area */
+    .chat-attached-context {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 26px;
-    }
-    .composer-actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    .iconbtn {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-      color: var(--muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .iconbtn:hover { background: rgba(255,255,255,.06); color: var(--fg); }
-    .iconbtn.plain {
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
-    .iconbtn.plain:hover { background: rgba(255,255,255,.06); }
-    .composer-chips {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       flex-wrap: wrap;
-      min-width: 0;
-      flex: 1;
+      gap: 4px;
+      padding: 6px 0 4px 0;
     }
-    .chip {
-      display: inline-flex;
+    .chat-attached-context:empty {
+      display: none;
+    }
+    .chat-attached-context-attachment {
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 8px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
-      color: var(--fg);
-      max-width: 75%;
+      overflow: hidden;
+      font-size: 11px;
+      padding: 0 4px 0 0;
+      border: 1px solid var(--chat-requestBorder, rgba(255,255,255,.10));
+      border-radius: 4px;
+      height: 18px;
+      max-width: 100%;
       width: fit-content;
-      flex: 0 1 auto;
-      min-width: 0;
-      white-space: nowrap;
+      background: var(--editor-background, #1e1e1e);
+    }
+    .chat-attached-context-attachment .codicon {
+      margin: 0 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chat-attached-context-attachment .file-icon {
+      margin: 0 2px 0 4px;
+    }
+    .chat-attached-context-attachment .attachment-label {
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--fg);
     }
-    .chip .codicon { opacity: .9; }
-    .chip .chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-    .chip-x {
-      width: 18px;
-      height: 18px;
+    .chat-attached-context-attachment .attachment-close {
+      width: 16px;
+      height: 16px;
       border: 0;
       background: transparent;
       color: var(--muted);
-      border-radius: 6px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      flex: 0 0 auto;
+      margin-left: 2px;
+      border-radius: 3px;
     }
-    .chip-x:hover { background: rgba(255,255,255,.08); color: var(--fg); }
-    .composer-input textarea,
-    .composer-input input {
+    .chat-attached-context-attachment .attachment-close:hover {
+      background: rgba(255,255,255,.1);
+      color: var(--fg);
+    }
+    
+    /* Editor container */
+    .chat-editor-container {
+      min-height: 20px;
+      padding: 6px 0 6px 0;
+    }
+    .chat-editor-container textarea {
       width: 100%;
       border: none;
       outline: none;
       resize: none;
       background: transparent;
-      color: var(--fg);
+      color: var(--input-foreground, var(--fg));
       font-family: var(--font-ui);
-      /* Match workbench UI scale (Cursor prompt is larger, but not huge) */
-      font-size: 16px;
-      line-height: 1.35;
-      padding: 4px 2px 6px;
-      min-height: 52px;
+      font-size: 13px;
+      line-height: 1.4;
+      padding: 0;
+      min-height: 20px;
+      max-height: 200px;
     }
-    .composer-input textarea::placeholder,
-    .composer-input input::placeholder {
-      /* Lower contrast placeholder driven by theme tokens */
-      color: var(--muted);
+    .chat-editor-container textarea::placeholder {
+      color: var(--input-placeholderForeground, var(--muted));
     }
-    .composer-bottom {
+    
+    /* Toolbars */
+    .chat-input-toolbars {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      min-height: 34px;
     }
-    .composer-left,
-    .composer-right {
+    .chat-input-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: auto;
+    }
+    .chat-input-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    /* Tool buttons */
+    .chat-tool-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
     }
-    .composer-right { justify-content: flex-end; flex-shrink: 0; }
+    .chat-tool-btn:hover {
+      background: rgba(255,255,255,.08);
+      color: var(--fg);
+    }
+    .toolbar-separator {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,.15);
+      margin: 0 4px;
+    }
+    .chat-tool-btn.send-btn {
+      background: var(--button-background, #0e639c);
+      color: var(--button-foreground, #fff);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+    }
+    .chat-tool-btn.send-btn:hover {
+      background: var(--button-hoverBackground, #1177bb);
+    }
+    
+    /* Mode/Model selector buttons */
+    .chat-mode-selector {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--font-ui);
+      height: 24px;
+    }
+    .chat-mode-selector:hover {
+      background: rgba(255,255,255,.1);
+    }
+    .chat-mode-selector .codicon {
+      font-size: 10px;
+      margin-left: 2px;
+      color: var(--muted);
+    }
+    
+    /* Copilot icon animation */
+    .chat-copilot-btn {
+      color: var(--muted);
+    }
+    .chat-copilot-btn.active {
+      color: var(--accent, #007acc);
+    }
 
     /* Remove focus/blue highlight visuals inside composer */
     .composer, .composer * { -webkit-tap-highlight-color: transparent; }
@@ -843,41 +941,175 @@
       user-select: none;
     }
     .sidebar-title { letter-spacing: .06em; color: var(--muted); font-weight: 600; font-size: 11px; }
-    .sidebar-body { padding: 8px; overflow-x: visible; overflow-y: auto; min-height: 0; }
+    .sidebar-body { padding: 0; overflow-x: visible; overflow-y: auto; min-height: 0; }
 
-    .tree { font-family: var(--font-ui); font-size: var(--fs-ui); line-height: 1.8; }
+    /* Sidebar sections (collapsible) */
+    .sidebar-section {
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-section:last-child {
+      border-bottom: none;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--sidebar-fg, var(--fg));
+    }
+    .section-header:hover {
+      background: var(--list-hover-bg, rgba(255,255,255,.05));
+    }
+    .section-header .chevron {
+      transition: transform 0.15s ease;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .section-header.collapsed .chevron {
+      transform: rotate(-90deg);
+    }
+    .section-content {
+      padding: 0 0 4px;
+    }
+    .section-header.collapsed + .section-content {
+      display: none;
+    }
+    .section-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .section-header:hover .section-actions {
+      opacity: 1;
+    }
+    .section-actions .btn {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: none;
+    }
+
+    .tree { font-family: var(--font-ui); font-size: var(--fs-ui); line-height: 1.6; }
     .tree .item {
-      display: flex; gap: 8px; align-items: center;
-      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      display: flex; gap: 6px; align-items: center;
+      padding: 2px 8px 2px 10px; cursor: pointer;
       color: var(--sidebar-fg, var(--fg));
       overflow: visible;
+      border-radius: 0;
     }
     .tree .item:hover { background: var(--list-hover-bg, rgba(255,255,255,.05)); }
     .tree .item.active { 
       background: var(--list-activeSelection-bg, rgba(0,122,204,.18)); 
-      outline: 1px solid var(--list-activeSelection-border, rgba(0,122,204,.25)); 
       color: var(--list-activeSelection-fg, inherit);
     }
     .tree .item .icon { flex-shrink: 0; margin: 0 2px; }
+    
+    /* Folder items with indent levels */
+    .tree .folder-item {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 2px 8px 2px 10px;
+      cursor: pointer;
+      color: var(--sidebar-fg, var(--fg));
+    }
+    .tree .folder-item:hover {
+      background: var(--list-hover-bg, rgba(255,255,255,.05));
+    }
+    .tree .folder-item .chevron {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.1s;
+      width: 16px;
+      text-align: center;
+    }
+    .tree .folder-item.collapsed .chevron {
+      transform: rotate(-90deg);
+    }
+    .tree .folder-item .folder-name {
+      font-weight: 500;
+    }
+    .tree .folder-children {
+      margin-left: 0;
+    }
+    .tree .folder-children.hidden {
+      display: none;
+    }
+    .tree .indent-1 { padding-left: 22px; }
+    .tree .indent-2 { padding-left: 38px; }
+    .tree .indent-3 { padding-left: 54px; }
+    
+    /* Empty section placeholder */
+    .section-empty {
+      padding: 8px 16px;
+      color: var(--muted);
+      font-size: 11px;
+      font-style: italic;
+    }
 
     .content {
       min-height: 0;
       min-width: 0;
       display: grid;
-      grid-template-rows: auto 1fr var(--splitter-h) var(--panel-h);
+      grid-template-rows: auto auto 1fr var(--splitter-h) var(--panel-h);
       background: var(--editor-bg);
     }
     /* Pin content children to fixed rows so hiding tabs doesn't reflow editor/panel rows */
     .content > .tabs { grid-row: 1; }
-    .content > .editor-wrap { grid-row: 2; }
-    .content > .panel-resizer { grid-row: 3; }
-    .content > .panel { grid-row: 4; }
+    .content > .breadcrumbs { grid-row: 2; }
+    .content > .editor-wrap { grid-row: 3; }
+    .content > .panel-resizer { grid-row: 4; }
+    .content > .panel { grid-row: 5; }
     /* If no file is open: keep editor area visible and keep terminal at a stable height (not 50/50). */
     :root { --panel-empty-h: 260px; }
     .content.no-file { 
-      grid-template-rows: 0px minmax(200px, 1fr) var(--splitter-h) var(--panel-h); 
+      grid-template-rows: 0px 0px minmax(200px, 1fr) var(--splitter-h) var(--panel-h); 
     }
-    .hide-panel .content.no-file { grid-template-rows: 0px 1fr 0px 0px; }
+    .hide-panel .content.no-file { grid-template-rows: 0px 0px 1fr 0px 0px; }
+    
+    /* Breadcrumbs bar */
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px 12px;
+      background: var(--editor-bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      min-height: 22px;
+      user-select: none;
+    }
+    .breadcrumb-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .breadcrumb-item:hover {
+      background: var(--list-hover-bg, rgba(255,255,255,.05));
+      color: var(--fg);
+    }
+    .breadcrumb-item .file-icon {
+      font-size: 16px;
+    }
+    .breadcrumb-sep {
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .content.no-file .breadcrumbs {
+      display: none;
+    }
 
     /* IMPORTANT: don't `display:none` the tabs in empty mode, or the grid auto-placement
        will move `.editor-wrap` into row 1 (0px) and the panel will take the full height. */
@@ -903,32 +1135,66 @@
 
     .tabs {
       display: flex; gap: 0;
-      background: var(--tab-bg);
+      background: var(--tab-bg, #2d2d2d);
       border-bottom: 1px solid var(--border);
       user-select: none;
       overflow-x: auto;
-      min-height: 34px;
+      min-height: 35px;
       align-items: stretch;
     }
+    .tabs::-webkit-scrollbar {
+      height: 3px;
+    }
+    .tabs::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,.2);
+      border-radius: 3px;
+    }
     .tab {
-      background: var(--tab-bg);
-      padding: 6px 10px;
+      background: var(--tab-bg, #2d2d2d);
+      padding: 0 12px;
       display: flex; align-items: center; gap: 8px;
       cursor: pointer;
       min-width: 120px;
-      max-width: 260px;
+      max-width: 200px;
       flex-shrink: 0;
       overflow: visible;
-      height: 34px;
-      color: var(--tab-inactive-fg, var(--fg));
+      height: 35px;
+      color: var(--tab-inactive-fg, #969696);
+      border-right: 1px solid var(--border);
+      position: relative;
     }
-    .tab:hover { background: rgba(255,255,255,.05); }
-    .tab.active { background: var(--tab-active-bg); border-top: 2px solid var(--accent); color: var(--tab-fg, #fff); }
-    .tab .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tab:hover { background: rgba(255,255,255,.04); }
+    .tab.active { 
+      background: var(--tab-active-bg, var(--editor-bg)); 
+      color: var(--tab-fg, #fff);
+    }
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--accent, #007acc);
+    }
+    .tab .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
     .tab .icon { flex-shrink: 0; margin: 0 2px; }
-    .tab .close { margin-left:auto; opacity:.7; }
-    .tab:hover .close { opacity: 1; }
-    .dot-unsaved { width: 7px; height: 7px; border-radius: 999px; background: var(--accent-2); flex-shrink: 0; margin: 0 2px; }
+    .tab .close { 
+      margin-left: auto; 
+      opacity: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+    }
+    .tab:hover .close { opacity: .7; }
+    .tab .close:hover { 
+      opacity: 1;
+      background: rgba(255,255,255,.1);
+    }
+    .dot-unsaved { width: 8px; height: 8px; border-radius: 999px; background: var(--accent-2, #75beff); flex-shrink: 0; }
 
     .editor-wrap {
       position: relative;
@@ -1073,32 +1339,44 @@
       border-top: 1px solid var(--border);
       min-height: 0;
       display: grid;
-      grid-template-rows: 34px 1fr;
+      grid-template-rows: 35px 1fr;
     }
     .panel-tabs {
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 8px;
       border-bottom: 1px solid var(--border);
       user-select: none;
+      background: var(--panel-bg);
     }
-    .panel-left { display:flex; gap: 6px; align-items:center; }
+    .panel-left { display:flex; gap: 0; align-items:center; }
+    .panel-right { display:flex; gap: 4px; align-items:center; }
     /* VS Code-like panel tabs with underline for active */
     .pill {
-      padding: 8px 10px;
+      padding: 8px 12px;
       border-radius: 0;
       background: transparent;
       border: 0;
-      border-bottom: 2px solid transparent;
+      border-bottom: 1px solid transparent;
+      margin-bottom: -1px;
       cursor: pointer;
       display: flex; align-items: center; gap: 6px;
       color: var(--muted);
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: .06em;
-      font-weight: 600;
+      letter-spacing: .04em;
+      font-weight: 500;
+      position: relative;
     }
-    .pill:hover { color: #fff; background: rgba(255,255,255,.03); }
-    .pill.active { border-bottom-color: var(--accent); color: #fff; }
+    .pill:hover { color: var(--fg); }
+    .pill.active { 
+      border-bottom-color: var(--accent); 
+      color: var(--fg);
+    }
+    .panel-right .btn {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+    }
 
     .terminal {
       font-family: var(--font-mono);
@@ -1195,9 +1473,40 @@
       padding: 0 10px;
       color: var(--status-fg, white);
       user-select: none;
+      font-size: 12px;
     }
-    .status-left, .status-right { display:flex; gap: 10px; align-items:center; }
-    .status-item { display: flex; align-items: center; gap: 4px; }
+    .status-left, .status-right { display:flex; gap: 12px; align-items:center; }
+    .status-item { 
+      display: flex; 
+      align-items: center; 
+      gap: 4px; 
+      cursor: pointer;
+      padding: 0 4px;
+      height: 100%;
+    }
+    .status-item:hover {
+      background: rgba(255,255,255,.12);
+    }
+    .status-item .codicon {
+      font-size: 14px;
+    }
+    .status-separator {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,.3);
+    }
+    .status-item.git-branch {
+      gap: 5px;
+    }
+    .status-item.git-branch .codicon {
+      font-size: 12px;
+    }
+    .status-item.errors .count {
+      font-size: 11px;
+    }
+    .status-item.warnings .count {
+      font-size: 11px;
+    }
 
     /* Editor empty state */
     .editor-empty {
@@ -1279,7 +1588,7 @@
       background: var(--sidebar-bg);
       border-left: 1px solid var(--border);
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto auto 1fr auto;
       min-width: 220px;
       /* Allow grid to shrink properly and avoid extra right blank area */
       width: 100%;
@@ -1287,30 +1596,124 @@
       overflow: hidden;
     }
     .aux-header {
-      padding: 10px 10px 8px;
+      padding: 8px 8px 8px 16px;
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       user-select: none;
-      background: var(--panel-bg, #1b1b1b);
+      background: var(--sidebar-bg);
+      min-height: 35px;
     }
-    /* Aux header: treat CHAT title like an always-active single tab */
+    /* Aux header: CHAT title */
     .aux-title {
-      letter-spacing: .06em;
-      font-weight: 600;
+      letter-spacing: .04em;
+      font-weight: 400;
       font-size: 11px;
       color: var(--fg);
-      position: relative;
+      text-transform: uppercase;
+    }
+    .aux-header-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .aux-header-actions .btn {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+    }
+    
+    /* Recent sessions section - VS Code style */
+    .aux-sessions {
+      padding: 0;
+    }
+    .aux-sessions-header {
+      display: flex;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 12px 8px 8px;
+    }
+    .session-item {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      padding: 8px 12px 8px 8px;
+      cursor: pointer;
+    }
+    .session-item:hover {
+      background: var(--list-hoverBackground, rgba(255,255,255,.04));
+    }
+    .session-dot {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .session-dot i {
+      font-size: 16px;
+      color: var(--muted);
+    }
+    .session-dot.active-dot i {
+      color: var(--accent, #007acc);
+    }
+    .session-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .session-title-row {
+      display: flex;
+      align-items: center;
+      line-height: 18px;
+      padding-bottom: 4px;
+    }
+    .session-title {
+      flex: 1;
+      font-size: 13px;
+      color: var(--fg);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .session-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 16px;
+    }
+    .session-changes {
       display: inline-flex;
       align-items: center;
-      /* underline highlight */
-      padding-bottom: 8px;
-      margin-bottom: -8px;
-      border-bottom: 2px solid var(--accent);
+      gap: 4px;
+      background: var(--toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
+      border-radius: 5px;
+      padding: 0 4px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
     }
-    .aux-body { padding: 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; background: var(--panel-bg, #1b1b1b); }
-    /* Composer host (was a flex row for the legacy one-line input) */
-    .aux-input { display: block; padding: 8px; background: var(--panel-bg, #1b1b1b); }
-    .aux-input .composer { width: 100%; }
+    .session-changes .added {
+      color: var(--chat-linesAddedForeground, #3fb950);
+    }
+    .session-changes .removed {
+      color: var(--chat-linesRemovedForeground, #f85149);
+    }
+    .session-time {
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    
+    .aux-body { padding: 10px 8px; overflow: auto; display: flex; flex-direction: column; gap: 10px; background: var(--panel-bg, #1b1b1b); flex: 1; }
+    /* Chat input host */
+    .aux-input {
+      padding: 8px 8px 12px 8px;
+      background: var(--panel-bg, #1b1b1b);
+    }
+    .aux-input .chat-input-container { width: 100%; }
     .aux-input input { flex: 1; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: var(--fg); border-radius: 8px; padding: 8px 10px; outline: none; font-family: var(--font-ui); font-size: 12px; }
     .msg { display: inline-flex; max-width: 90%; padding: 8px 10px; border-radius: 8px; }
     .msg.user { align-self: flex-end; background: rgba(0,122,204,.18); border: 1px solid rgba(0,122,204,.25); }
@@ -1325,44 +1728,109 @@
       inset: 0;
       background: rgba(0,0,0,.35);
       display: none;
-      align-items: flex-start;
-      justify-content: center;
-      padding-top: 60px;
-      z-index: 50;
+      z-index: 2500;
     }
-    .overlay.show { display: flex; }
+    .overlay.show { display: block; }
+    /* Quick Input / Command Palette - exact VS Code styling */
     .palette {
-      width: min(860px, calc(100vw - 24px));
-      background: #252526;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 8px;
-      box-shadow: 0 18px 60px var(--shadow);
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      max-width: calc(100vw - 40px);
+      background: var(--quickInput-background, #252526);
+      border: 1px solid var(--pickerGroup-border, #3f3f46);
+      border-top: 0;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 0 8px 2px rgba(0,0,0,.36);
       overflow: hidden;
+    }
+    .palette-header {
+      display: flex;
+      padding: 6px 6px 0 6px;
+    }
+    .palette-input-wrap {
+      flex: 1;
+      position: relative;
     }
     .palette input {
       width: 100%;
-      border: 0;
+      box-sizing: border-box;
+      border: 1px solid transparent;
       outline: none;
-      padding: 12px;
-      background: #1f1f1f;
-      color: #fff;
+      padding: 4px 6px;
+      border-radius: 4px;
+      background: var(--input-background, #3c3c3c);
+      color: var(--input-foreground, #fff);
       font-family: var(--font-ui);
-      font-size: 14px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 13px;
     }
-    .palette-list { max-height: 320px; overflow: auto; }
+    .palette input:focus {
+      border-color: var(--focusBorder, #007acc);
+    }
+    .palette input::placeholder {
+      color: var(--input-placeholderForeground, var(--muted));
+    }
+    .palette-list {
+      line-height: 22px;
+      max-height: calc(20 * 22px);
+      overflow-y: auto;
+      padding: 4px 0 7px 0;
+    }
     .pal-item {
-      padding: 10px 12px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 10px;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,.04);
+      display: flex;
       align-items: center;
+      padding: 0 6px;
+      height: 22px;
+      cursor: pointer;
+      border-radius: 3px;
+      margin: 0 6px;
+      gap: 8px;
     }
-    .pal-item:hover, .pal-item.active { background: rgba(0,122,204,.18); }
+    .pal-item:hover { background: var(--list-hoverBackground, rgba(255,255,255,.04)); }
+    .pal-item.active {
+      background: var(--list-activeSelectionBackground, #04395e);
+      color: var(--list-activeSelectionForeground, #fff);
+    }
+    .pal-item .codicon, .pal-item .icon {
+      font-size: 14px;
+      color: var(--muted);
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pal-item.active .codicon, .pal-item.active .icon { color: inherit; }
+    .pal-item-label {
+      flex: 1;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .pal-desc { color: var(--muted); font-size: 11px; }
-    .pal-kbd { color: var(--muted); font-size: 11px; }
+    .pal-kbd {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      font-family: var(--font-ui);
+    }
+    .pal-item.active .pal-kbd { color: rgba(255,255,255,.7); }
+    /* Group separator */
+    .pal-separator {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--pickerGroup-foreground, #3794ff);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      border-top: 1px solid var(--pickerGroup-border, #3f3f46);
+      margin-top: 4px;
+    }
+    .pal-separator:first-child { border-top: none; margin-top: 0; }
 
     .hide-activity .activitybar { display: none !important; }
     .hide-activity .main { grid-template-columns: 0px minmax(0, var(--sidebar-w)) var(--sidebar-divider-w) minmax(0,1fr) var(--aux-divider-w) minmax(0, var(--auxiliary-w)); }
@@ -1371,7 +1839,7 @@
     .hide-sidebar .main { grid-template-columns: var(--activity-w) 0px 0px minmax(0,1fr) var(--aux-divider-w) minmax(0, var(--auxiliary-w)); }
     .hide-activity.hide-sidebar .main { grid-template-columns: 0px 0px 0px minmax(0,1fr) var(--aux-divider-w) minmax(0, var(--auxiliary-w)); }
     .hide-panel .panel { display: none !important; }
-    .hide-panel .content { grid-template-rows: auto 1fr 0px 0px; }
+    .hide-panel .content { grid-template-rows: auto auto 1fr 0px 0px; }
     .hide-auxiliary .auxiliarybar, .hide-auxiliary .resizer-x { display: none !important; }
     .hide-auxiliary .main { grid-template-columns: var(--activity-w) minmax(0, var(--sidebar-w)) var(--sidebar-divider-w) minmax(0,1fr) 0px 0px; }
     /* Resolve combined hide states to avoid leftover reserved widths */
@@ -1474,67 +1942,76 @@
         <svg class="icon fallback-icon" style="width:20px;height:20px"><use href="#icon-vscode"/></svg>
       </div>
       <div class="title-center">
-        <div class="project-quick" id="projectQuick" title="Show and Run Commands (Ctrl+Shift+P)" tabindex="0" role="button" aria-label="Project Command Center">
-          <i class="codicon codicon-search"></i>
-          <span class="label" id="projectName">js-embeddings-1</span>
-        </div>
-        <div class="menu-wrap">
-          <button class="btn icon plain" title="AI Chat" id="btnChatMenu" aria-haspopup="menu" aria-expanded="false">
-            <i class="codicon codicon-chat-sparkle"></i>
-            <i class="codicon codicon-chevron-down"></i>
-        </button>
-          <div class="menu" id="chatMenu" role="menu">
-            <div class="item" data-action="open-chat" role="menuitem"><i class="codicon codicon-comment-discussion"></i>Open Chat</div>
-            <div class="item" data-action="open-inline" role="menuitem"><i class="codicon codicon-comment-unresolved"></i>Open Inline Chat</div>
-            <div class="item" data-action="open-quick" role="menuitem"><i class="codicon codicon-search"></i>Open Quick Chat</div>
-            <div class="item" data-action="new-window" role="menuitem"><i class="codicon codicon-window"></i>New Chat Window</div>
+        <div class="command-center" id="projectQuick" title="Show and Run Commands (Ctrl+Shift+P)" tabindex="0" role="button" aria-label="Command Center">
+          <div class="command-center-quick-pick">
+            <i class="codicon codicon-search search-icon"></i>
+            <span class="search-label" id="projectName">js-embeddings-1</span>
           </div>
+          <div class="command-center-chat" id="btnChatMenu" title="Open Chat (Ctrl+Shift+I)">
+            <i class="codicon codicon-copilot"></i>
+            <i class="codicon codicon-chevron-down" style="font-size:10px;"></i>
+          </div>
+        </div>
+        <div class="menu" id="chatMenu" role="menu">
+          <div class="item" data-action="open-chat" role="menuitem"><i class="codicon codicon-comment-discussion"></i>Open Chat</div>
+          <div class="item" data-action="open-inline" role="menuitem"><i class="codicon codicon-comment-unresolved"></i>Open Inline Chat</div>
+          <div class="item" data-action="open-quick" role="menuitem"><i class="codicon codicon-search"></i>Open Quick Chat</div>
+          <div class="item" data-action="new-window" role="menuitem"><i class="codicon codicon-window"></i>New Chat Window</div>
         </div>
       </div>
       <div class="title-actions">
-        <button class="btn icon" title="Toggle Sidebar (Ctrl+B)" id="btnSidebar">
+        <!-- Layout controls (like VS Code's split toggles) -->
+        <button class="btn icon" title="Customize Layout" id="btnLayoutPrimary">
+          <i class="codicon codicon-layout"></i>
+        </button>
+        <button class="btn icon" title="Toggle Primary Side Bar (Ctrl+B)" id="btnSidebar">
           <i class="codicon codicon-layout-sidebar-left"></i>
           <svg class="icon fallback-icon"><use href="#icon-sidebar"/></svg>
         </button>
-        <button class="btn icon" title="Toggle Terminal (Ctrl+`)" id="btnTerminal">
+        <button class="btn icon" title="Toggle Panel (Ctrl+`)" id="btnTerminal">
           <i class="codicon codicon-layout-panel"></i>
           <svg class="icon fallback-icon"><use href="#icon-terminal"/></svg>
         </button>
-        <button class="btn icon" title="Chat" id="btnChat">
+        <button class="btn icon" title="Toggle Secondary Side Bar" id="btnChat">
           <i class="codicon codicon-layout-sidebar-right"></i>
           <svg class="icon fallback-icon"><use href="#icon-info"/></svg>
         </button>
-        <button class="btn icon updates-btn" title="Updates" id="btnUpdates" aria-haspopup="dialog" aria-expanded="false">
-          <img class="vscode-mark" src="./assets/visual-studio-code-icons/vscode.svg" alt="Updates" />
-          <span class="updates-dot" aria-hidden="true"></span>
+        <button class="btn icon" title="Customize Layout...">
+          <i class="codicon codicon-layout-sidebar-right-off"></i>
         </button>
       </div>
     </div>
 
     <div class="main">
       <div class="activitybar">
-        <div class="act active" data-view="explorer" title="Explorer">
+        <div class="act active" data-view="explorer" title="Explorer (Ctrl+Shift+E)">
           <i class="codicon codicon-files codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-files"/></svg>
         </div>
-        <div class="act" data-view="search" title="Search">
+        <div class="act" data-view="search" title="Search (Ctrl+Shift+F)">
           <i class="codicon codicon-search codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-search"/></svg>
         </div>
-        <div class="act" data-view="scm" title="Source Control">
+        <div class="act" data-view="scm" title="Source Control (Ctrl+Shift+G)">
           <i class="codicon codicon-source-control codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-git"/></svg>
         </div>
-        <div class="act" data-view="run" title="Run and Debug">
+        <div class="act" data-view="run" title="Run and Debug (Ctrl+Shift+D)">
           <i class="codicon codicon-debug-alt codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-debug"/></svg>
         </div>
-        <div class="act" data-view="ext" title="Extensions">
+        <div class="act" data-view="ext" title="Extensions (Ctrl+Shift+X)">
           <i class="codicon codicon-extensions codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-extensions"/></svg>
         </div>
+        <div class="act" data-view="testing" title="Testing">
+          <i class="codicon codicon-beaker codicon-lg"></i>
+        </div>
         <div style="flex:1"></div>
-        <div class="act" title="Settings">
+        <div class="act" title="Accounts">
+          <i class="codicon codicon-account codicon-lg"></i>
+        </div>
+        <div class="act" title="Manage">
           <i class="codicon codicon-settings-gear codicon-lg"></i>
           <svg class="icon icon-lg fallback-icon"><use href="#icon-settings"/></svg>
         </div>
@@ -1550,7 +2027,44 @@
           </button>
         </div>
         <div class="sidebar-body">
-          <div class="tree" id="tree"></div>
+          <!-- Project Section -->
+          <div class="sidebar-section">
+            <div class="section-header" data-section="project">
+              <i class="codicon codicon-chevron-down chevron"></i>
+              <span id="projectSectionTitle">JS-EMBEDDINGS-1</span>
+              <div class="section-actions">
+                <button class="btn icon" title="New File"><i class="codicon codicon-new-file"></i></button>
+                <button class="btn icon" title="New Folder"><i class="codicon codicon-new-folder"></i></button>
+                <button class="btn icon" title="Refresh"><i class="codicon codicon-refresh"></i></button>
+                <button class="btn icon" title="Collapse All"><i class="codicon codicon-collapse-all"></i></button>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="tree" id="tree"></div>
+            </div>
+          </div>
+          
+          <!-- Outline Section -->
+          <div class="sidebar-section">
+            <div class="section-header collapsed" data-section="outline">
+              <i class="codicon codicon-chevron-down chevron"></i>
+              <span>OUTLINE</span>
+            </div>
+            <div class="section-content">
+              <div class="section-empty">No symbols found in document.</div>
+            </div>
+          </div>
+          
+          <!-- Timeline Section -->
+          <div class="sidebar-section">
+            <div class="section-header collapsed" data-section="timeline">
+              <i class="codicon codicon-chevron-down chevron"></i>
+              <span>TIMELINE</span>
+            </div>
+            <div class="section-content">
+              <div class="section-empty">Timeline view is empty.</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1559,6 +2073,17 @@
 
       <div class="content">
         <div class="tabs" id="tabs"></div>
+        
+        <div class="breadcrumbs" id="breadcrumbs">
+          <div class="breadcrumb-item" title="Go to Folder">
+            <i class="codicon codicon-folder"></i>
+            <span id="breadcrumbFolder">js-embeddings-1</span>
+          </div>
+          <span class="breadcrumb-sep"><i class="codicon codicon-chevron-right"></i></span>
+          <div class="breadcrumb-item" id="breadcrumbFile">
+            <span id="breadcrumbFileName">app.js</span>
+          </div>
+        </div>
 
         <div class="editor-wrap">
           <div class="gutter" id="gutter"></div>
@@ -1601,12 +2126,24 @@
         <div class="panel">
           <div class="panel-tabs">
             <div class="panel-left">
-              <div class="pill active">Terminal</div>
-              <div class="pill">Problems</div>
-              <div class="pill">Output</div>
+              <div class="pill active" data-panel="terminal">Terminal</div>
+              <div class="pill" data-panel="problems">Problems</div>
+              <div class="pill" data-panel="output">Output</div>
             </div>
             <div class="panel-right">
-              <button class="btn icon" id="btnPanelClose">
+              <button class="btn icon" title="New Terminal" id="btnNewTerminal">
+                <i class="codicon codicon-plus"></i>
+              </button>
+              <button class="btn icon" title="Split Terminal">
+                <i class="codicon codicon-split-horizontal"></i>
+              </button>
+              <button class="btn icon" title="Kill Terminal">
+                <i class="codicon codicon-trash"></i>
+              </button>
+              <button class="btn icon" title="Maximize Panel">
+                <i class="codicon codicon-chevron-up"></i>
+              </button>
+              <button class="btn icon" id="btnPanelClose" title="Close Panel">
                 <i class="codicon codicon-close"></i>
                 <svg class="icon fallback-icon"><use href="#icon-close"/></svg>
               </button>
@@ -1629,11 +2166,57 @@
       <div class="auxiliarybar" id="aux">
         <div class="aux-header">
           <div class="aux-title">CHAT</div>
-          <button class="btn icon" id="btnAuxClose">
-            <i class="codicon codicon-close"></i>
-            <svg class="icon fallback-icon"><use href="#icon-close"/></svg>
-          </button>
+          <div class="aux-header-actions">
+            <button class="btn icon" title="New Chat (Ctrl+L)">
+              <i class="codicon codicon-add"></i>
+            </button>
+            <button class="btn icon" title="Configure Chat...">
+              <i class="codicon codicon-gear"></i>
+            </button>
+            <button class="btn icon" title="Open Chat in Editor">
+              <i class="codicon codicon-go-to-file"></i>
+            </button>
+            <button class="btn icon" title="Open Chat in New Window">
+              <i class="codicon codicon-screen-full"></i>
+            </button>
+          </div>
         </div>
+        
+        <!-- Recent Sessions -->
+        <div class="aux-sessions">
+          <div class="aux-sessions-header">
+            <span>RECENT SESSIONS</span>
+          </div>
+          <div class="session-item">
+            <div class="session-dot active-dot">
+              <i class="codicon codicon-circle-filled"></i>
+            </div>
+            <div class="session-content">
+              <div class="session-title-row">
+                <span class="session-title">Refining preview layout and icons</span>
+              </div>
+              <div class="session-meta">
+                <span class="session-changes"><span class="added">+150</span> <span class="removed">-10</span></span>
+                <span class="session-time">Background • 1 min</span>
+              </div>
+            </div>
+          </div>
+          <div class="session-item">
+            <div class="session-dot">
+              <i class="codicon codicon-circle-small-filled"></i>
+            </div>
+            <div class="session-content">
+              <div class="session-title-row">
+                <span class="session-title">Replacing placeholder text for inline chat</span>
+              </div>
+              <div class="session-meta">
+                <span class="session-changes"><span class="added">+3</span> <span class="removed">-10</span></span>
+                <span class="session-time">Local • 30 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="aux-body" id="chatLog">
           <div class="chat-empty-state" id="auxEmpty">
             <div class="aux-empty-content">
@@ -1646,41 +2229,39 @@
             </div>
           </div>
         </div>
-        <!-- Cursor-like Composer -->
+        <!-- Chat Input - VS Code style -->
         <div class="aux-input">
-          <div class="composer" id="auxComposer">
-            <div class="composer-top">
-              <div class="composer-actions">
-                <button class="iconbtn" id="auxAttach" title="Attach"><i class="codicon codicon-attach"></i></button>
-              </div>
-              <div class="composer-chips" id="auxChips"></div>
+          <div class="chat-input-container" id="auxComposer">
+            <div class="chat-attached-context" id="auxChips"></div>
+            <div class="chat-editor-container">
+              <textarea id="chatInput" placeholder="Describe what to build next" rows="1"></textarea>
             </div>
-            <div class="composer-input">
-              <textarea id="chatInput" placeholder="Describe what to build next" rows="2"></textarea>
-            </div>
-            <div class="composer-bottom">
-              <div class="composer-left">
-                <div class="copilot-pill copilot-active" aria-hidden="true"><i class="codicon codicon-copilot"></i></div>
-                <div class="dd" id="auxModeDD">
-                  <button class="dd-btn" id="auxModeBtn" type="button" aria-haspopup="menu" aria-expanded="false">
-                    <span class="dd-label">Agent</span>
-                    <i class="codicon codicon-chevron-down dd-chev"></i>
-                  </button>
-                  <div class="dd-menu" id="auxModeMenu" role="menu" aria-label="Mode"></div>
-                </div>
-                <div class="dd" id="auxModelDD">
-                  <button class="dd-btn" id="auxModelBtn" type="button" aria-haspopup="menu" aria-expanded="false">
-                    <span class="dd-label">GPT-5 mini</span>
-                    <i class="codicon codicon-chevron-down dd-chev"></i>
-                  </button>
-                  <div class="dd-menu" id="auxModelMenu" role="menu" aria-label="Model"></div>
-                </div>
-                <button class="iconbtn plain" id="auxTools" title="Tools" type="button"><i class="codicon codicon-tools"></i></button>
+            <div class="chat-input-toolbars">
+              <div class="chat-input-toolbar">
+                <button class="chat-tool-btn" id="auxAttach" title="Attach Context (Ctrl+/)">
+                  <i class="codicon codicon-attach"></i>
+                </button>
               </div>
-              <div class="composer-right">
-                <button class="btn" id="chatSend" title="Send">
+              <div class="chat-input-toolbar-right">
+                <button class="chat-mode-selector" id="auxModeBtn" type="button">
+                  <span>Agent</span>
+                  <i class="codicon codicon-chevron-down"></i>
+                </button>
+                <div class="dd-menu" id="auxModeMenu" role="menu" aria-label="Mode"></div>
+                <button class="chat-mode-selector" id="auxModelBtn" type="button">
+                  <span>Auto</span>
+                  <i class="codicon codicon-chevron-down"></i>
+                </button>
+                <div class="dd-menu" id="auxModelMenu" role="menu" aria-label="Model"></div>
+                <button class="chat-tool-btn" id="auxTools" title="Tools">
+                  <i class="codicon codicon-tools"></i>
+                </button>
+                <button class="chat-tool-btn" title="Undo Edit">
+                  <i class="codicon codicon-discard"></i>
+                </button>
+                <span class="toolbar-separator"></span>
+                <button class="chat-tool-btn send-btn" id="chatSend" title="Send (Enter)">
                   <i class="codicon codicon-send"></i>
-                  <svg class="icon fallback-icon"><use href="#icon-output"/></svg>
                 </button>
               </div>
             </div>
@@ -1691,26 +2272,58 @@
 
     <div class="statusbar">
       <div class="status-left">
-        <span class="status-item">
-          <i class="codicon codicon-info"></i>
-          <svg class="icon fallback-icon"><use href="#icon-info"/></svg>
-          <span id="statusMsg">Ready</span>
+        <span class="status-item git-branch" title="Checkout Branch">
+          <i class="codicon codicon-source-control"></i>
+          <span id="statusBranch">main</span>
+          <i class="codicon codicon-cloud-upload" style="font-size:11px; margin-left:2px;"></i>
+        </span>
+        <span class="status-item" title="Synchronize Changes">
+          <i class="codicon codicon-sync" style="font-size:12px;"></i>
+          <span id="statusSync">0↓ 1↑</span>
+        </span>
+        <span class="status-item errors" title="View Problems">
+          <i class="codicon codicon-error"></i>
+          <span class="count" id="statusErrors">0</span>
+        </span>
+        <span class="status-item warnings" title="View Warnings">
+          <i class="codicon codicon-warning"></i>
+          <span class="count" id="statusWarnings">0</span>
         </span>
       </div>
       <div class="status-right">
-        <span class="status-item">
-          <i class="codicon codicon-code"></i>
-          <svg class="icon fallback-icon"><use href="#icon-file-code"/></svg>
-          <span id="statusFile">app.js</span>
+        <span class="status-item" title="Go to Line/Column">
+          <span id="statusPos">Ln 1, Col 1</span>
         </span>
-        <span id="statusPos">Ln 1, Col 1</span>
+        <span class="status-item" title="Select Indentation">
+          <span>Spaces: 2</span>
+        </span>
+        <span class="status-item" title="Select Encoding">
+          <span>UTF-8</span>
+        </span>
+        <span class="status-item" title="Select End of Line Sequence">
+          <span>LF</span>
+        </span>
+        <span class="status-item" title="Select Language Mode">
+          <span>{}</span>
+          <span id="statusLang">TypeScript</span>
+        </span>
+        <span class="status-item" title="Copilot Status">
+          <i class="codicon codicon-copilot"></i>
+        </span>
+        <span class="status-item updates-status" id="btnUpdates" title="Updates" style="cursor:pointer">
+          <i class="codicon codicon-bell-dot"></i>
+        </span>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="overlay">
     <div class="palette">
-      <input id="palInput" autocomplete="off" placeholder="Type a command…" />
+      <div class="palette-header">
+        <div class="palette-input-wrap">
+          <input id="palInput" autocomplete="off" placeholder="Type a command…" />
+        </div>
+      </div>
       <div class="palette-list" id="palList"></div>
     </div>
   </div>
@@ -1804,10 +2417,14 @@
     const editorEmpty = document.getElementById('editorEmpty');
     const editorContainer = editor.querySelector('.editor-container');
     const statusMsg = document.getElementById('statusMsg');
-    const statusFile = document.getElementById('statusFile');
     const statusPos = document.getElementById('statusPos');
+    const statusLang = document.getElementById('statusLang');
+    const breadcrumbs = document.getElementById('breadcrumbs');
+    const breadcrumbFolder = document.getElementById('breadcrumbFolder');
+    const breadcrumbFileName = document.getElementById('breadcrumbFileName');
     const tree = document.getElementById('tree');
     const sidebarTitle = document.getElementById('sidebarTitle');
+    const projectSectionTitle = document.getElementById('projectSectionTitle');
     const tabs = document.getElementById('tabs');
     const contentEl = document.querySelector('.content');
     const overlay = document.getElementById('overlay');
@@ -1849,6 +2466,49 @@
     const activityTopHost = document.getElementById('activityTopHost');
     const ACTIVITY_POS_KEY = 'activity-bar-position';
     let activityBarPosition = 'left';
+
+    // Language mode detection based on file extension
+    const extToLanguage = {
+      'js': 'JavaScript',
+      'jsx': 'JavaScript React',
+      'ts': 'TypeScript',
+      'tsx': 'TypeScript React',
+      'json': 'JSON',
+      'jsonc': 'JSON with Comments',
+      'md': 'Markdown',
+      'css': 'CSS',
+      'scss': 'SCSS',
+      'sass': 'SASS',
+      'less': 'LESS',
+      'html': 'HTML',
+      'htm': 'HTML',
+      'xml': 'XML',
+      'py': 'Python',
+      'rb': 'Ruby',
+      'go': 'Go',
+      'rs': 'Rust',
+      'java': 'Java',
+      'c': 'C',
+      'cpp': 'C++',
+      'h': 'C Header',
+      'hpp': 'C++ Header',
+      'cs': 'C#',
+      'php': 'PHP',
+      'sh': 'Shell Script',
+      'bash': 'Bash',
+      'zsh': 'Zsh',
+      'yaml': 'YAML',
+      'yml': 'YAML',
+      'toml': 'TOML',
+      'sql': 'SQL',
+      'txt': 'Plain Text'
+    };
+    
+    function getLanguageMode(filename) {
+      if (!filename) return 'Plain Text';
+      const ext = filename.split('.').pop()?.toLowerCase() || '';
+      return extToLanguage[ext] || 'Plain Text';
+    }
 
     const fileIcons = {
       'js': 'file-code', 'jsx': 'file-code', 'ts': 'file-code',
@@ -2569,15 +3229,103 @@ body {
       tree.innerHTML='';
       sidebarTitle.textContent=view.toUpperCase();
       if(view==='explorer') {
-        [...files.keys()].forEach(file=>{
-          const row=document.createElement('div');
-          row.className='item'+(file===currentFile?' active':'');
-          row.innerHTML=`${fileIconHTML(file)}<span>${file}</span>`;
-          row.onclick=()=>openFile(file);
+        // Build a folder structure from file paths
+        const fileList = [...files.keys()].sort();
+        const folders = new Map(); // Track folders and their contents
+        
+        // Group files by folder (or root)
+        fileList.forEach(file => {
+          const parts = file.split('/');
+          if (parts.length === 1) {
+            // Root level file
+            if (!folders.has('__root__')) folders.set('__root__', []);
+            folders.get('__root__').push(file);
+          } else {
+            // File in a folder
+            const folder = parts.slice(0, -1).join('/');
+            if (!folders.has(folder)) folders.set(folder, []);
+            folders.get(folder).push(file);
+          }
+        });
+        
+        // Render root files first, then folders
+        const rootFiles = folders.get('__root__') || [];
+        rootFiles.forEach(file => {
+          const row = document.createElement('div');
+          row.className = 'item' + (file === currentFile ? ' active' : '');
+          row.innerHTML = `${fileIconHTML(file)}<span>${file}</span>`;
+          row.onclick = () => openFile(file);
           tree.appendChild(row);
         });
+        
+        // Render folder groups (for nested paths)
+        folders.forEach((filesInFolder, folder) => {
+          if (folder === '__root__') return;
+          
+          // Create folder item
+          const folderItem = document.createElement('div');
+          folderItem.className = 'folder-item';
+          folderItem.innerHTML = `
+            <i class="codicon codicon-chevron-down chevron"></i>
+            <i class="codicon codicon-folder"></i>
+            <span class="folder-name">${folder}</span>
+          `;
+          folderItem.onclick = (e) => {
+            e.stopPropagation();
+            folderItem.classList.toggle('collapsed');
+            const children = folderItem.nextElementSibling;
+            if (children) children.classList.toggle('hidden');
+          };
+          tree.appendChild(folderItem);
+          
+          // Create folder children container
+          const childrenDiv = document.createElement('div');
+          childrenDiv.className = 'folder-children';
+          filesInFolder.forEach(file => {
+            const fileName = file.split('/').pop();
+            const row = document.createElement('div');
+            row.className = 'item indent-1' + (file === currentFile ? ' active' : '');
+            row.innerHTML = `${fileIconHTML(file)}<span>${fileName}</span>`;
+            row.onclick = () => openFile(file);
+            childrenDiv.appendChild(row);
+          });
+          tree.appendChild(childrenDiv);
+        });
       } else {
-        tree.innerHTML=`<div class="term-dim" style="padding:6px">(${view}) Placeholder</div>`;
+        tree.innerHTML=`<div class="section-empty">(${view}) Placeholder</div>`;
+      }
+    }
+    
+    // Setup collapsible sidebar sections
+    function setupSidebarSections() {
+      document.querySelectorAll('.section-header[data-section]').forEach(header => {
+        header.addEventListener('click', (e) => {
+          if (e.target.closest('.section-actions')) return; // Don't toggle when clicking action buttons
+          header.classList.toggle('collapsed');
+        });
+      });
+    }
+    
+    // Update breadcrumbs when file changes
+    function updateBreadcrumbs(filename) {
+      if (!breadcrumbFileName || !breadcrumbFolder) return;
+      if (!filename) {
+        if (breadcrumbs) breadcrumbs.style.display = 'none';
+        return;
+      }
+      if (breadcrumbs) breadcrumbs.style.display = 'flex';
+      
+      const projectName = projectNameEl?.textContent || 'Project';
+      breadcrumbFolder.textContent = projectName;
+      
+      const parts = filename.split('/');
+      breadcrumbFileName.textContent = parts[parts.length - 1];
+    }
+    
+    // Update status bar language
+    function updateStatusLanguage(filename) {
+      if (statusLang) {
+        statusLang.textContent = getLanguageMode(filename);
       }
     }
 
@@ -2587,6 +3335,8 @@ body {
         setEditorEmptyMode(true);
         renderTabs();
         renderTree();
+        updateBreadcrumbs(null);
+        updateStatusLanguage(null);
         try { syncComposerChips(); } catch {}
         return;
       }
@@ -2597,13 +3347,14 @@ body {
       }
       currentFile=file;
       dismissedChipFor = null;
-      statusFile.textContent=file;
       setEditorEmptyMode(false);
       ta.value=files.get(file)??'';
       currentLine=1;
       syncHighlightAndGutter();
       renderTabs();
       renderTree();
+      updateBreadcrumbs(file);
+      updateStatusLanguage(file);
       setStatus(`Opened ${file}`);
       ta.focus();
       try { syncComposerChips(); } catch {}
@@ -2669,11 +3420,11 @@ body {
       refreshEditorSoon();
     };
     btnChat.onclick=()=>{wb.classList.toggle('hide-auxiliary');syncToggleButtons();refreshEditorSoon();};
-    document.getElementById('btnAuxClose').onclick=()=>{
+    document.getElementById('btnAuxClose')?.addEventListener('click', ()=>{
       wb.classList.add('hide-auxiliary');
       syncToggleButtons();
       refreshEditorSoon();
-    };
+    });
 
     // Onboarding overlay
     function openOnboarding() {
@@ -2716,7 +3467,7 @@ body {
 
     function showPalette(mode='commands') {overlay.classList.add('show');palInput.value='';palInput.dataset.mode=mode;palInput.placeholder=mode==='files'?'Type file name…':'Type command…';renderPaletteList('');palInput.focus();}
     function hidePalette() {overlay.classList.remove('show');ta.focus();}
-    function renderPaletteList(query) {const mode=palInput.dataset.mode||'commands',q=query.trim().toLowerCase();let items=mode==='files'?[...files.keys()].filter(f=>f.toLowerCase().includes(q)).map(f=>({label:f,icon:getIcon(f),run:()=>openFile(f)})):commands.filter(c=>c.label.toLowerCase().includes(q)).slice(0,12);palList.innerHTML='';if(items.length===0) {palList.innerHTML='<div class="pal-item"><div></div><div>No results</div><div></div></div>';return;}items.forEach((it,idx)=>{const row=document.createElement('div');row.className='pal-item'+(idx===0?' active':'');row.innerHTML=`${iconHTML(it.icon||'file')}<div>${it.label}</div><div class="pal-kbd">${it.kbd||'↵'}</div>`;row.onclick=()=>{it.run?.();hidePalette();};palList.appendChild(row);});palList.dataset.count=String(items.length);palList.dataset.selected='0';palList._items=items;}
+    function renderPaletteList(query) {const mode=palInput.dataset.mode||'commands',q=query.trim().toLowerCase();let items=mode==='files'?[...files.keys()].filter(f=>f.toLowerCase().includes(q)).map(f=>({label:f,icon:getIcon(f),run:()=>openFile(f)})):commands.filter(c=>c.label.toLowerCase().includes(q)).slice(0,12);palList.innerHTML='';if(items.length===0) {palList.innerHTML='<div class="pal-item"><span class="pal-item-label">No results</span></div>';return;}items.forEach((it,idx)=>{const row=document.createElement('div');row.className='pal-item'+(idx===0?' active':'');row.innerHTML=`${iconHTML(it.icon||'file')}<span class="pal-item-label">${it.label}</span><span class="pal-kbd">${it.kbd||''}</span>`;row.onclick=()=>{it.run?.();hidePalette();};palList.appendChild(row);});palList.dataset.count=String(items.length);palList.dataset.selected='0';palList._items=items;}
     function paletteMove(delta) {const count=Number(palList.dataset.count||'0');if(!count)return;let sel=Math.max(0,Math.min(count-1,Number(palList.dataset.selected||'0')+delta));palList.dataset.selected=String(sel);[...palList.children].forEach((el,i)=>el.classList.toggle('active',i===sel));palList.children[sel]?.scrollIntoView({block:'nearest'});}
     function paletteRunSelected() {const items=palList._items||[];items[Number(palList.dataset.selected||'0')]?.run?.();hidePalette();}
 
@@ -2957,6 +3708,13 @@ body {
         document.getElementById('chatSend').click();
       }
     });
+    // Add focus styling to chat input container
+    chatInput?.addEventListener('focus', ()=>{
+      chatInput.closest('.chat-input-container')?.classList.add('focused');
+    });
+    chatInput?.addEventListener('blur', ()=>{
+      chatInput.closest('.chat-input-container')?.classList.remove('focused');
+    });
     syncAuxEmptyState();
 
     // Workbench theme mapper
@@ -3125,6 +3883,16 @@ body {
           if (first) currentFile = first;
         } catch {}
       })();
+      
+      // Update project section title
+      const projectName = projectNameEl?.textContent || 'Project';
+      if (projectSectionTitle) {
+        projectSectionTitle.textContent = projectName.toUpperCase();
+      }
+      
+      // Setup sidebar section toggles
+      setupSidebarSections();
+      
       renderTree();renderTabs();openFile(currentFile);setDirty(false);syncToggleButtons();refreshEditorSoon();
       syncEmptyStateShortcuts();
       setupChipDismissal();
